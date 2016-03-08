@@ -1,13 +1,17 @@
+#coding=utf-8
 #!/usr/bin/python
 
-# -*- coding: UTF-8 -*- 
 
 import MySQLdb
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
 
 class WebCrawlerDB:
 
-    db = MySQLdb.connect("localhost", 'root', "root", 'spider')
+    db = MySQLdb.connect("localhost", 'root', "root", 'spider', charset="utf8" )
     cursor = db.cursor()
+    cursor.execute('SET NAMES utf8')
         
     @staticmethod
     def write(sql):
@@ -15,9 +19,12 @@ class WebCrawlerDB:
             try:
                 WebCrawlerDB.cursor.execute(sql)
                 WebCrawlerDB.db.commit()
-            except:
-                print "db write error"
+            except MySQLdb.Error,  e:
                 WebCrawlerDB.db.rollback()
+                try:
+                   print "MySQL Error [%d]: %s" % (e.args[0], e.args[1])
+                except:
+                   print 'mysql write error'
     @staticmethod
     def read(sql):
         if sql.strip():
@@ -30,13 +37,13 @@ class WebCrawlerDB:
 
 
 if __name__ == '__main__':
-     sql = "insert into test(id, name) values(2, 'zhihao');"   
-     #WebCrawlerDB.write(sql)
-     sql = "select * from test";
+     sql = "insert into attritube(title, url, source) values('志豪','志豪', '志豪')"
+     print "sql:%s" % sql
+     WebCrawlerDB.write(sql)
+     sql = "select *  from attritube order by id desc limit 2";
      results = WebCrawlerDB.read(sql)
 # need conveert python sql to python class and auto assign value ,  generate a direct
 # use python object
      for row in results:
-         ID = row[0]
-         name = row[1]
-         print "ID:%d name:%s " % (ID, name)
+         title = row[1].decode("utf-8")
+         print "title:%s " % (title)

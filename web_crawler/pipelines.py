@@ -6,39 +6,38 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 
+
+
+
+import sys
+import os
 from scrapy import signals
-from web_crawler.misc.log import *
+from misc.log import *
+from comm.spider_db import *
+from items import *
 import json
 import codecs
 import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-class web_crawlerPipeline(object):
-
-
-
-    def __init__(self):
-        self.result = codecs.open("byr_result", 'a', encoding='utf-8')
-
-
-       # engine = create_engine("mysql://root:root@localhost:3306/zhihu?charset=utf8",encoding="utf-8", echo=True)
-       # metadata = MetaData()
-       # answer = Table('answer', metadata,
-       #     Column('id', Integer, primary_key=True),
-       #     Column('finger', String(256)),
-       #     Column('title', String(256)),
-       #     Column('count', Integer),
-       #     Column('url', String(256)),
-       # );
-
-
-       #metadata.create_all(engine)
-       #self.conn = engine.connect()
-
+class webCrawlerPipeline(object):
     def process_item(self, item, spider):
         #info("item to db:"+ item['title'])
-        content = item['title'] + " " + item['url'] +  " " + item['content'] + "\n"
-        self.result.write(content)
-        self.result.flush()
+        #self.result.write(content)
+        #self.result.flush()
+        sql = "insert into attritube(title, url, posttime, mark, source, data ) values ('%s', '%s' , '%s', '%s', '%s', '%s' )" % (item['title'], item['url'], item["posttime"], item['mark'], item['source'], item['data'])
+        info("sql:" + sql)
+        WebCrawlerDB.write(sql)
         return item
+
+if __name__ == '__main__':
+    item = ByrTiezi()
+    spider = 0
+    item['url'] = "test"
+    item['title'] = "test"
+    item['posttime'] = "test"
+    item['mark'] = "test"
+    item['source'] = "test"
+    pipe = webCrawlerPipeline()
+    pipe.process_item(item, spider)

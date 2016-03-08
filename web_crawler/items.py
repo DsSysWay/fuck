@@ -9,10 +9,12 @@ import scrapy
 from scrapy.item import Item, Field
 
 
-class Answer(scrapy.Item):
+class ByrTiezi(scrapy.Item):
     # define the fields for your item here like:
      title = scrapy.Field()
-     finger = scrapy.Field()
-     content = scrapy.Field()
+     mark = scrapy.Field()
      url = scrapy.Field()
+     posttime = scrapy.Field()
      source = scrapy.Field()
+     data = scrapy.Field()
+
